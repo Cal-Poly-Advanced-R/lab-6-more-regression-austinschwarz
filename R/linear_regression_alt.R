@@ -10,12 +10,47 @@
 #'
 #' @export
 slr_gd <- function(dat, response, explanatory){
-  
+
   ### Compute coefficients by gradient descent
   ### Return a data frame of the same form as in the `simple_linear_regression`
-  
+
+  x <- dat %>% pull({{explanatory}})
+  y <- dat %>% pull({{response}})
+
+  x <- scale(x)
+  x <- as.matrix(data.frame(rep(1,length(y)),x))
+
+  rate <- 0.00001
+  iters <- 20000
+  error <- 0.000001
+
+  betas <- as.matrix(rnorm(n=dim(x)[2], mean=0,sd = 1))
+
+  for (i in 1:iters){
+
+    one <- data.matrix(2*rate*t(x))
+    two <- data.matrix(y - (x %*% betas))
+
+    dlb <- one %*% two
+    betas1 <- betas + dlb
+
+    if (error >= sum(abs(dlb))) {
+      break
+    }
+
+    else{
+      betas <- betas1
+    }
+
+  }
+
+  results <- data.frame(t(betas1))
+  colnames(results) <- c("Intercept","hp")
+
+  print("I Standardized X so they might look different.")
+
   return(results)
-  
+
 }
 
 
@@ -37,14 +72,46 @@ slr_gd <- function(dat, response, explanatory){
 #'
 #'@export
 mlr_gd <- function(dat, response) {
-  
-  
-  
-  ### Compute coefficients by gradient descent
-  ### Return a data frame of the same form as in the `multiple_linear_regression`
-  
+
+
+
+  x <- dat %>% select(-{{response}})
+  y <- dat %>% pull({{response}})
+
+  x <- scale(x)
+  x <- as.matrix(data.frame(rep(1,length(y)),x))
+
+  rate <- 0.00001
+  iters <- 75000
+  error <- 0.000001
+
+  betas <- as.matrix(rnorm(n=dim(x)[2], mean=0,sd = 1))
+
+  for (i in 1:iters){
+
+    one <- data.matrix(2*rate*t(x))
+    two <- data.matrix(y - (x %*% betas))
+
+    dlb <- one %*% two
+    betas1 <- betas + dlb
+
+    if (error >= sum(abs(dlb))) {
+      break
+    }
+
+    else{
+      betas <- betas1
+    }
+
+  }
+
+  results <- data.frame(t(betas1))
+  colnames(results) <- c("Intercept","cyl","hp")
+
+  print("I Standardized X so they might look different.")
+
   return(results)
-  
+
 }
 
 #' Implements linear regression with many predictors by matrix decomposition
@@ -65,12 +132,21 @@ mlr_gd <- function(dat, response) {
 #'
 #'@export
 mlr_qr <- function(dat, response) {
-  
-  
-  
+
+  x <- dat %>% select(-{{response}})
+  y <- dat %>% pull({{response}})
+
+  x <- scale(x)
+  x <- as.matrix(data.frame(rep(1,length(y)),x))
+
+  QR <- qr(x)
+  results <- solve.qr(QR,y)
+
+  results <- data.frame(t(results))
+
   ### Compute coefficients by QR decomposition
   ### Return a data frame of the same form as in the `multiple_linear_regression`
-  
+
   return(results)
-  
+
 }

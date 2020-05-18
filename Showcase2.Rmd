@@ -14,7 +14,6 @@ library(regress431)
 ## Simple Linear Regression by gradient descent
 
 ```{r}
-
 slr_gd
 
 
@@ -24,7 +23,6 @@ slr_gd
 
 
 ```{r}
-
 mlr_qr
 
 
